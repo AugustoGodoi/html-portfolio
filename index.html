@@ -1,21 +1,47 @@
 <!DOCTYPE html>
 <html>
+    <meta charset="utf-8"
 <head>
-    <title>Obter Dados de GPS em Tempo Real</title>
+    <title>Gravar Dados de GPS em Tempo Real</title>
 </head>
 <body>
+    <h1>GPS Data Acquistion</h1>
     <p>Latitude: <span id="latitude"></span></p>
     <p>Longitude: <span id="longitude"></span></p>
     <p>Precisão: <span id="precisao"></span> metros</p>
     <p>Velocidade: <span id="velocidade"></span> m/s</p>
 
+    <button id="iniciarGravacao" onclick="iniciarGravacao()">Iniciar Gravação</button>
+    <button id="pararGravacao" onclick="pararGravacao()" style="display: none;">Parar Gravação</button>
+    <button id="downloadCSV" onclick="downloadCSV()" style="display: none;">Baixar Dados em CSV</button>
+
     <script>
+        var watchId;
+        var gravando = false;
+        var dadosGravados = [];
+
         // Função para atualizar os dados de localização
         function atualizarLocalizacao(position) {
-            document.getElementById("latitude").textContent = position.coords.latitude;
-            document.getElementById("longitude").textContent = position.coords.longitude;
-            document.getElementById("precisao").textContent = position.coords.accuracy;
-            document.getElementById("velocidade").textContent = position.coords.speed; // Velocidade em m/s
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var precisao = position.coords.accuracy;
+            var velocidade = position.coords.speed;
+
+            document.getElementById("latitude").textContent = latitude;
+            document.getElementById("longitude").textContent = longitude;
+            document.getElementById("precisao").textContent = precisao;
+            document.getElementById("velocidade").textContent = velocidade;
+
+            if (gravando) {
+                // Gravar os dados enquanto a gravação estiver ativa
+                var dadosLocal = {
+                    latitude: latitude,
+                    longitude: longitude,
+                    precisao: precisao,
+                    velocidade: velocidade
+                };
+                dadosGravados.push(dadosLocal);
+            }
         }
 
         // Função para lidar com erros na obtenção da localização
@@ -23,17 +49,44 @@
             console.error("Erro ao obter localização: " + error.message);
         }
 
-        // Opções de configuração da geolocalização
-        var options = {
-            enableHighAccuracy: true,
-            maximumAge: 0
-        };
+        // Função para iniciar a gravação
+        function iniciarGravacao() {
+            if ("geolocation" in navigator) {
+                watchId = navigator.geolocation.watchPosition(atualizarLocalizacao, erroLocalizacao);
+                gravando = true;
+                document.getElementById("iniciarGravacao").style.display = "none";
+                document.getElementById("pararGravacao").style.display = "inline";
+            } else {
+                console.log("Geolocalização não suportada no navegador.");
+            }
+        }
 
-        // Solicitar a localização
-        if ("geolocation" in navigator) {
-            var watchId = navigator.geolocation.watchPosition(atualizarLocalizacao, erroLocalizacao, options);
-        } else {
-            console.log("Geolocalização não suportada no navegador.");
+        // Função para parar a gravação
+        function pararGravacao() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                gravando = false;
+                document.getElementById("iniciarGravacao").style.display = "inline";
+                document.getElementById("pararGravacao").style.display = "none";
+                document.getElementById("downloadCSV").style.display = "inline";
+            }
+        }
+
+        // Função para baixar os dados em formato CSV
+        function downloadCSV() {
+            if (dadosGravados.length > 0) {
+                var csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Latitude,Longitude,Precisão,Velocidade\n";
+                dadosGravados.forEach(function (data) {
+                    csvContent += data.latitude + "," + data.longitude + "," + data.precisao + "," + data.velocidade + "\n";
+                });
+
+                var encodedUri = encodeURI(csvContent);
+                var link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "dados_geolocalizacao.csv");
+                link.click();
+            }
         }
     </script>
 </body>
