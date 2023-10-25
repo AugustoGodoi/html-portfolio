@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obter Dados de GPS em Tempo Real</title>
+</head>
+<body>
+    <p>Latitude: <span id="latitude"></span></p>
+    <p>Longitude: <span id="longitude"></span></p>
+    <p>Precisão: <span id="precisao"></span> metros</p>
+
+    <script>
+        // Função para atualizar os dados de localização
+        function atualizarLocalizacao(position) {
+            document.getElementById("latitude").textContent = position.coords.latitude;
+            document.getElementById("longitude").textContent = position.coords.longitude;
+            document.getElementById("precisao").textContent = position.coords.accuracy;
+        }
+
+        // Função para lidar com erros na obtenção da localização
+        function erroLocalizacao(error) {
+            console.error("Erro ao obter localização: " + error.message);
+        }
+
+        // Opções de configuração da geolocalização
+        var options = {
+            enableHighAccuracy: true,
+            maximumAge: 0
+        };
+
+        // Solicitar a localização
+        if ("geolocation" in navigator) {
+            var watchId = navigator.geolocation.watchPosition(atualizarLocalizacao, erroLocalizacao, options);
+        } else {
+            console.log("Geolocalização não suportada no navegador.");
+        }
+    </script>
+</body>
+</html>
