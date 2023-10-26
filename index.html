@@ -1,93 +1,47 @@
+<!-- TODO 1: Create the HTML Boilerplate -->
+
+<!-- TODO 2: Add Your previous projects' HTML into the public folder -->
+
+<!-- TODO 3: Take screenshots of your project previews and add the images to the images folder -->
+
+<!-- TODO 4: Add titles/subtitles etc. -->
+
+<!-- TODO 5: Add a link to the project pages -->
+
+<!-- TODO 6: Add images to show the project previews
+HINT for TODO 6: You can use the height attribute set to 200 to make the image smaller:
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-height -->
+
+<!-- TODO 7: Add the Contact Me and About Me page links -->
+
 <!DOCTYPE html>
-<html>
-    <meta charset="utf-8"
+<html lang="en">
 <head>
-    <title>Gravar Dados de GPS em Tempo Real</title>
+    <meta charset="UTF-8">
+    <title>Godah Portfolio</title>
 </head>
 <body>
-    <h1>GPS Data Acquistion</h1>
-    <p>Latitude: <span id="latitude"></span></p>
-    <p>Longitude: <span id="longitude"></span></p>
-    <p>Precisão: <span id="precisao"></span> metros</p>
-    <p>Velocidade: <span id="velocidade"></span> m/s</p>
+    <h1>Godah's Portfolio</h1>
+    <h2>I'm Web developer</h2>
+    <hr/>
+    
+    <h3>First Project: Movie Ranking</h3>
+    <a href="./public/movie-ranking.html">
+        <img src="./assets/images/movie-ranking-project.png"
+            height="300"
+            alt="Movie Ranking Project"/>
+    </a>
 
-    <button id="iniciarGravacao" onclick="iniciarGravacao()">Iniciar Gravação</button>
-    <button id="pararGravacao" onclick="pararGravacao()" style="display: none;">Parar Gravação</button>
-    <button id="downloadCSV" onclick="downloadCSV()" style="display: none;">Baixar Dados em CSV</button>
+    <h3>Second Project: Birthday Invite</h3>
+    <a href="./public/birthday-invite.html">
+        <img src="./assets/images/birthday-invite-project.png"
+        height="300"
+        alt="Birthday Invite Project Example"/>
+    </a>
 
-    <script>
-        var watchId;
-        var gravando = false;
-        var dadosGravados = [];
+    <hr />
+    <a href="./public/about.html">About Me</a> | <a href="./public/contact.html">Contact me</a>
+    
 
-        // Função para atualizar os dados de localização
-        function atualizarLocalizacao(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            var precisao = position.coords.accuracy;
-            var velocidade = position.coords.speed;
-
-            document.getElementById("latitude").textContent = latitude;
-            document.getElementById("longitude").textContent = longitude;
-            document.getElementById("precisao").textContent = precisao;
-            document.getElementById("velocidade").textContent = velocidade;
-
-            if (gravando) {
-                // Gravar os dados enquanto a gravação estiver ativa
-                var dadosLocal = {
-                    latitude: latitude,
-                    longitude: longitude,
-                    precisao: precisao,
-                    velocidade: velocidade
-                };
-                dadosGravados.push(dadosLocal);
-            }
-        }
-
-        // Função para lidar com erros na obtenção da localização
-        function erroLocalizacao(error) {
-            console.error("Erro ao obter localização: " + error.message);
-        }
-
-        // Função para iniciar a gravação
-        function iniciarGravacao() {
-            if ("geolocation" in navigator) {
-                watchId = navigator.geolocation.watchPosition(atualizarLocalizacao, erroLocalizacao);
-                gravando = true;
-                document.getElementById("iniciarGravacao").style.display = "none";
-                document.getElementById("pararGravacao").style.display = "inline";
-            } else {
-                console.log("Geolocalização não suportada no navegador.");
-            }
-        }
-
-        // Função para parar a gravação
-        function pararGravacao() {
-            if (watchId) {
-                navigator.geolocation.clearWatch(watchId);
-                gravando = false;
-                document.getElementById("iniciarGravacao").style.display = "inline";
-                document.getElementById("pararGravacao").style.display = "none";
-                document.getElementById("downloadCSV").style.display = "inline";
-            }
-        }
-
-        // Função para baixar os dados em formato CSV
-        function downloadCSV() {
-            if (dadosGravados.length > 0) {
-                var csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "Latitude,Longitude,Precisão,Velocidade\n";
-                dadosGravados.forEach(function (data) {
-                    csvContent += data.latitude + "," + data.longitude + "," + data.precisao + "," + data.velocidade + "\n";
-                });
-
-                var encodedUri = encodeURI(csvContent);
-                var link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "dados_geolocalizacao.csv");
-                link.click();
-            }
-        }
-    </script>
 </body>
 </html>
